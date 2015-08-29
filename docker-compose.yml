@@ -1,0 +1,27 @@
+proxy:
+    name: proxy
+    image: nginx
+    volumes:
+        - ./config/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+        - ./www:/var/www 
+    ports:
+        - 8116:80
+    links:
+        - docs 
+        - server
+
+server:
+    name: server
+    image: node:0.10
+    volumes: 
+        - .:/opt
+    working_dir: /opt/www
+    command: ../node_modules/instant-server/bin/instant 80
+
+docs:
+    name: server
+    image: node:0.10
+    volumes: 
+        - .:/opt/www
+    working_dir: /opt/www/docs
+    command: ../node_modules/instant-server/bin/instant 80

@@ -1,0 +1,21 @@
+{
+  "name": "bills-api",
+  "version": "0.0.1",
+  "authors": [
+    "David Godfrey <david@byng.co>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.5",
+    "angular-functional-helpers": "~1.0.4",
+    "logdown-angular-bridge": "~0.1.0"
+  }
+}
