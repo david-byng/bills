@@ -1,4 +1,5 @@
 require("logdown-angular-bridge");
+require("angular-functional-helpers");
 
 angular.module(
     "mysociety",

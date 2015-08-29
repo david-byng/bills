@@ -1,10 +1,12 @@
 require("angular");
 require("logdown-angular-bridge");
+require("angular-functional-helpers");
 
 angular.module(
     "parliament",
     [
-        "aanimals.module.logdown.service.logdown"
+        "aanimals.module.logdown.service.logdown",
+        "byng.module.functional-helpers.service.functional-helpers"
     ]
 )
     /**
@@ -14,12 +16,14 @@ angular.module(
      * @description
      * Simplifies making requests to the Parliament API
      */
-    .factory(
-        "ParliamentHttp",
+    .service(
+        "Parliament",
         function(
             $http, $q,
+            pluck,
             Logdown
         ) {
+            var that = this;
             var logger = new Logdown({ prefix: "ParliamentHttp" });
 
             function ParliamentHttp(config) {
@@ -37,7 +41,7 @@ angular.module(
                         // unwrap data
                         return $q.reject(response.data);
                     });
-            };
+            }
 
             /**
              * @ngdoc method
@@ -82,13 +86,13 @@ angular.module(
                     params.page = page;
                 }
 
-                that.gettingSession()
+                return that.gettingSession()
                     .then(function(session) {
 
                         return ParliamentHttp({
                             url: "/bills.json",
                             params: params
-                        })
+                        });
                     })
 
                     .then(pluck("result"))
@@ -108,18 +112,18 @@ angular.module(
              *
              * example:
              *
-             * {
-             *     _about: "http://data.parliament.uk/resources/377318",
-             *     displayName: "2015-2016",
-             *     parliament: "http://data.parliament.uk/resources/377308",
-             *     sessionNumber: {
-             *         _value: "1"
-             *     },
-             *     startDate: {
-             *         _value: "2015-05-18",
-             *         _datatype: "dateTime"
+             *     {
+             *         _about: "http://data.parliament.uk/resources/377318",
+             *         displayName: "2015-2016",
+             *         parliament: "http://data.parliament.uk/resources/377308",
+             *         sessionNumber: {
+             *             _value: "1"
+             *         },
+             *         startDate: {
+             *             _value: "2015-05-18",
+             *             _datatype: "dateTime"
+             *         }
              *     }
-             * }
              *
              * @returns {Object} promise resolving to session info
              */
@@ -135,8 +139,23 @@ angular.module(
                         "max-startDate": "2015-08-29"
                     }
                 })
+                    .then(pluck("result"))
                     .then(pluck("items"))
                     .then(pluck(0));
+            };
+
+            /**
+             * @ngdoc method
+             * @name gettingSessionName
+             * @methodOf parliament.service:Parliament
+             * @description
+             * Returns the current session's display name
+             *
+             * @return {Object} promise resolving to string
+             */
+            that.gettingSessionName = function() {
+                return that.gettingSession()
+                    .pluck("displayName");
             };
         }
     );
